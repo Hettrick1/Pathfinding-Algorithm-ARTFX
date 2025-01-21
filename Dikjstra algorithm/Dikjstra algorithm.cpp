@@ -3,6 +3,8 @@
 #include <vector>
 #include <algorithm>
 
+#define SIZE 12
+
 #define inf std::numeric_limits<int>::max()
 
 int graph[12][12] = {
@@ -18,29 +20,35 @@ int graph[12][12] = {
 {   inf, inf, inf, inf, inf, 5,   inf, inf, 0,   inf, inf, inf }, //I
 {   inf, inf, inf, inf, inf, 1,   inf, inf, 9,   0,   inf, inf }, //J
 {   inf, inf, 3,   inf, 8,   inf, inf, inf, inf,   inf, 0, 5   }, //K
-{   inf, inf, inf, inf, inf, inf, inf, 12,  inf, inf, inf, 0   }, //L
+{   inf, 6  , inf, inf, inf, inf, inf, 12,  inf, inf, inf, 0   }, //L
 };
 
-int distance[12];
-int previous[12];
+int distance[SIZE];
+int previous[SIZE];
 
-void CalculateDikjstra(int Start, int graph[12][12], int* dist, int* prev);
+char letterStart = -1;
+char letterEnd = -1;
+
+void CalculateDikjstra(int Start, int graph[SIZE][SIZE], int* dist, int* prev);
+void AskForPath();
+void DrawPath();
 
 int main()
-{
-    CalculateDikjstra(0, graph, distance, previous);
-    std::cout << "Hello World!\n";
+{   
+    AskForPath();
+    CalculateDikjstra(letterStart, graph, distance, previous);
     for (int i = 0; i < 12; i++) {
-        std::cout << static_cast<char>('A' + i ) << ":\t" << distance[i] << " \t: " << static_cast<char>('A' + previous[i]) << std::endl;
+        std::cout << static_cast<char>('A' + i) << ":\t" << distance[i] << " \t: " << static_cast<char>('A' + previous[i]) << std::endl;
     }
+    DrawPath();
 }
 
-void CalculateDikjstra(int src, int graph [12][12], int* dist, int* prev)
+void CalculateDikjstra(int src, int graph[SIZE][SIZE], int* dist, int* prev)
 {
 
     std::vector<int> openNodes;
 
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < SIZE; i++) {
         dist[i] = inf;
         prev[i] = -1;
         openNodes.push_back(i);
@@ -68,6 +76,40 @@ void CalculateDikjstra(int src, int graph [12][12], int* dist, int* prev)
                     prev[j] = u;
                 }
             }
+        }
+    }
+}
+
+void AskForPath()
+{
+    do {
+        std::cout << "Choose your start" << std::endl;
+        std::cin >> letterStart;
+    } while (letterStart < 'a' || letterStart > 'l');
+    letterStart -= 'a';
+    do {
+        std::cin.clear();
+        std::cout << "Choose your end" << std::endl;
+        std::cin >> letterEnd;
+    } while (letterEnd < 'a' || letterEnd > 'l');
+    letterEnd -= 'a';
+}
+
+void DrawPath()
+{
+    std::vector<int> previousIndexInv;
+    previousIndexInv.push_back(letterEnd);
+    while (previous[previousIndexInv.back()] != -1) {
+        previousIndexInv.push_back(previous[previousIndexInv.back()]);
+    };
+    int index = letterEnd;
+    for (int i = previousIndexInv.size() - 1; i >= 0; i--) {
+        std::cout << static_cast<char>('A' + previousIndexInv[i]);
+        if (i != 0) {
+            std::cout << "-->";
+        }
+        else {
+            std::cout << std::endl;
         }
     }
 }
